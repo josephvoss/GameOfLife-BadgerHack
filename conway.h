@@ -16,8 +16,8 @@ class Cell
 		bool getLive(void);
 		void setLocation(int x, int y);
 		void findNeighboors(void)
-		//void calcLiveNeighboors(Cell (&totalCells)[], int length);
-		void calcLiveNeighboors(std::vector<std::vector<Cell>> &cellMatrix);
+		void calcLiveNeighboors(Cell (&totalCells)[], int length);
+		//void calcLiveNeighboors(std::vector<std::vector<Cell>> &cellMatrix);
 		void calcNextState(void);
 		void nextState(void);
 
@@ -62,7 +62,7 @@ void Cell::findNeighboors(void)
 	return;
 }
 
-void calcLiveNeighboors(std::vector<std::vector<Cell>> &cellMatrix);
+void calcLiveNeighboors(Cell (&totalCells)[], int length);
 {
 	int x,y;
 	for (i=-1; i<2; i++)
@@ -72,12 +72,12 @@ void calcLiveNeighboors(std::vector<std::vector<Cell>> &cellMatrix);
 			y = neighboors[i][j].y;
 			
 			//Wrap borders (0 indexed x value)
-			if (x + 1 > cellMatrix.size())
+			if (x + 1 > length)
 				x = 0;
-			if (y + 1 > cellMatrix.size())
+			if (y + 1 > length)
 				y = 0;
 
-			if ( (cellMatrix[i][j]).getLive() && (i != 0 && j != 0))
+			if ( (totalCells[x][y]).getLive() && (i != 0 && j != 0))
 				liveNeighboors += 1;
 		}
 	return;
