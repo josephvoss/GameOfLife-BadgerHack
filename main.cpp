@@ -4,16 +4,19 @@
 
 int main()
 {
-        int length = 8;
-        cell *totalcells;
-        totalcells = (cell*) malloc(sizeof(cell)*length*length);
-//      cell totalcells[8][8];
+        int lengthx = 9;
+	int lengthy = 9;
+        CellArray totalcells(lengthx, lengthy);
 
-        //initialize
-        int i,j;
-        for(i=0; i<8; i++)
-                for(j=0; j<8; j++)
-                        *(totalcells + i + j*8) = cell(i,j);
+	//R pentimo
+	totalcells(5,4).setLive(true); //top row
+	totalcells(6,4).setLive(true);
+	totalcells(5,5).setLive(true); //mid row
+	totalcells(4,5).setLive(true);
+	totalcells(5,6).setLive(true); //bot row
+
+	for (int i=0; i++; i<1000)
+		totalcells.iterate();
 
         return 0;
 }
