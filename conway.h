@@ -16,6 +16,8 @@ struct xyCoords
 	int y;
 };
 
+class CellArray; //forward declaration
+
 class Cell
 {
 	public:
@@ -23,10 +25,9 @@ class Cell
 		int getX(void);
 		int getY(void);
 		bool getLive(void);
-		void setLocation(int x, int y);
+		void setLive(bool live);
 		void findNeighboors(void);
-		void calcLiveNeighboors(Cell* totalCells, int lengthx, int lengthy);
-		//void calcLiveNeighboors(std::vector<std::vector<Cell>> &cellMatrix);
+		void calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy);
 		void calcNextState(void);
 		void nextState(void);
 
@@ -43,7 +44,7 @@ class CellArray
 	public:
 		CellArray(int x, int y);
 		~CellArray();
-		Cell& operator[](xyCoords xy);
+		Cell& operator()(int x, int y);
 		void iterate(void);
 	
 	private:

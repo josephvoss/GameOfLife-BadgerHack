@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "conway.h"
 
 Cell::Cell(int x, int y)
@@ -21,10 +22,9 @@ bool Cell::getLive(void)
 	return liveNow;
 }
 
-void Cell::setLocation(int x, int y)
+void Cell::setLive(bool live)
 {
-	myLocation.x = x;
-	myLocation.y = y;
+	liveNow = live;
 	return;
 }
 
@@ -40,7 +40,7 @@ void Cell::findNeighboors(void)
 	return;
 }
 
-void Cell::calcLiveNeighboors(Cell* totalCells, int lengthx, int lengthy)
+void Cell::calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy)
 {
 	int x,y,i,j;
 	for (i=-1; i<2; i++)
@@ -55,7 +55,7 @@ void Cell::calcLiveNeighboors(Cell* totalCells, int lengthx, int lengthy)
 			if (y + 1 > lengthy)
 				y = 0;
 
-			if ( (*(totalCells+i*length+j)).getLive() && (i != 0 && j != 0))
+			if ( totalCells(x,y).getLive() && (i != 0 && j != 0))
 				liveNeighboors += 1;
 		}
 	return;
@@ -84,13 +84,14 @@ void Cell::nextState(void)
 CellArray::CellArray(int x, int y)
 {
 	lengthx = x; lengthy = y;
-	rootLocation = malloc(sizeof(Cell)*x*y);
-	for(int i=0; i<x, i++)
-		for(int j=0; j<y; j++)
+	rootLocation = (Cell*) malloc(sizeof(Cell)*x*y);
+	for(int i=0; i<y; i++)
+		for(int j=0; j<x; j++)
 		{
-			*(rootLocation+lengthx*i+j) = Cell(x,y); //cache issue?
+//			*(rootLocation+lengthx*i+j) = Cell(j,i); //cache issue?
+			(*this)(j,i) = Cell(j,i);
 			//only called once per cell
-			(rootLocation+lengthx*i+j)->findNeighboor();
+			(*this)(j,i).findNeighboors();
 		}
 
 }
@@ -101,19 +102,19 @@ CellArray::~CellArray(void)
 	free(rootLocation);
 }
 
-Cell& CellArray::operator[](xyCoords xy)
+Cell& CellArray::operator()(int j, int i)
 {
-	return *(rootlocation + xy.x*lengthx + xy.y);
+	return *(rootLocation + i*lengthx + j);
 }
 
-CellArray::iterate(void)
+void CellArray::iterate(void)
 {
 	for (int i=0; i<lengthx-1; i++)
 		for (int j=0; j<lengthy-1; j++)
 		{
-			(rootLocation+lengthx*i+j)->calcLiveNeighboors(rootLocation, lengthx, lengthy);
-			(rootLocation+lengthx*i+j)->calcNextState();
-			(rootLocation+lengthx*i+j)->nextState();
+			(*this)(j,i).calcLiveNeighboors((*this), lengthx, lengthy);
+			(*this)(j,i).calcNextState();
+			(*this)(j,i).nextState();
 		}
 }
 
