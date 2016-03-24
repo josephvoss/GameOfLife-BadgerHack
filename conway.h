@@ -1,6 +1,15 @@
 //Cell class
 //Contains the cell's location and method to find neighboors
 
+/*
+NOTATION NOTE
+(i,j) 
+ j j j
+i
+i
+i
+*/
+
 struct xyCoords
 {
 	int x;
@@ -16,7 +25,7 @@ class Cell
 		bool getLive(void);
 		void setLocation(int x, int y);
 		void findNeighboors(void);
-		void calcLiveNeighboors(Cell* totalCells, int length);
+		void calcLiveNeighboors(Cell* totalCells, int lengthx, int lengthy);
 		//void calcLiveNeighboors(std::vector<std::vector<Cell>> &cellMatrix);
 		void calcNextState(void);
 		void nextState(void);
@@ -29,3 +38,16 @@ class Cell
 		bool liveNext;
 };
 
+class CellArray
+{
+	public:
+		CellArray(int x, int y);
+		~CellArray();
+		Cell& operator[](xyCoords xy);
+		void iterate(void);
+	
+	private:
+		Cell* rootLocation;
+		int lengthx;
+		int lengthy;
+};

@@ -40,7 +40,7 @@ void Cell::findNeighboors(void)
 	return;
 }
 
-void Cell::calcLiveNeighboors(Cell* totalCells, int length)
+void Cell::calcLiveNeighboors(Cell* totalCells, int lengthx, int lengthy)
 {
 	int x,y,i,j;
 	for (i=-1; i<2; i++)
@@ -50,12 +50,12 @@ void Cell::calcLiveNeighboors(Cell* totalCells, int length)
 			y = neighboors[i][j].y;
 			
 			//Wrap borders (0 indexed x value)
-			if (x + 1 > length)
+			if (x + 1 > lengthx)
 				x = 0;
-			if (y + 1 > length)
+			if (y + 1 > lengthy)
 				y = 0;
 
-			if ( (*(totalCells + i + j*length)).getLive() && (i != 0 && j != 0))
+			if ( (*(totalCells+i*length+j)).getLive() && (i != 0 && j != 0))
 				liveNeighboors += 1;
 		}
 	return;
@@ -80,3 +80,40 @@ void Cell::nextState(void)
 	liveNext = false;
 	return;
 }
+
+CellArray::CellArray(int x, int y)
+{
+	lengthx = x; lengthy = y;
+	rootLocation = malloc(sizeof(Cell)*x*y);
+	for(int i=0; i<x, i++)
+		for(int j=0; j<y; j++)
+		{
+			*(rootLocation+lengthx*i+j) = Cell(x,y); //cache issue?
+			//only called once per cell
+			(rootLocation+lengthx*i+j)->findNeighboor();
+		}
+
+}
+
+CellArray::~CellArray(void)
+{
+	lengthx = 0; lengthy = 0;
+	free(rootLocation);
+}
+
+Cell& CellArray::operator[](xyCoords xy)
+{
+	return *(rootlocation + xy.x*lengthx + xy.y);
+}
+
+CellArray::iterate(void)
+{
+	for (int i=0; i<lengthx-1; i++)
+		for (int j=0; j<lengthy-1; j++)
+		{
+			(rootLocation+lengthx*i+j)->calcLiveNeighboors(rootLocation, lengthx, lengthy);
+			(rootLocation+lengthx*i+j)->calcNextState();
+			(rootLocation+lengthx*i+j)->nextState();
+		}
+}
+
