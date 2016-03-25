@@ -44,7 +44,8 @@ class CellArray
 	public:
 		CellArray(int x, int y);
 		~CellArray();
-		Cell& operator()(int x, int y);
+		Cell getCell(int x, int y);
+		void setCell(int x, int y, Cell newCell);
 		void iterate(void);
 	
 	private:
