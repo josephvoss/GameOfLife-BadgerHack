@@ -22,6 +22,7 @@ class Cell
 {
 	public:
 		Cell(int x, int y);
+	//	~Cell();
 		int getX(void);
 		int getY(void);
 		bool getLive(void);
@@ -46,6 +47,7 @@ class CellArray
 		~CellArray();
 		Cell getCell(int x, int y);
 		void setCell(int x, int y, Cell newCell);
+		void setCellLive(int, int);
 		void iterate(void);
 	
 	private:

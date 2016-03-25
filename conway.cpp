@@ -6,8 +6,16 @@ Cell::Cell(int x, int y)
 {
 	myLocation.x = x; myLocation.y = y;
 	liveNeighboors=0; liveNow=false;
+//	*neighboors = (xyCoords*) malloc(3*sizeof(xyCoords));	
+	
+	
 }
 
+/*Cell::~Cell(void)
+{
+//	delete[] neighboors;
+}
+*/
 int Cell::getX(void)
 {
 	return myLocation.x;
@@ -55,6 +63,7 @@ void Cell::findNeighboors(void)
 void Cell::calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy)
 {
 	int x,y,i,j;
+	liveNeighboors = 0;
 	for (i=0; i<3; i++)
 		for (j=0; j<3; j++)
 		{
@@ -71,8 +80,8 @@ void Cell::calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy)
 			else if (y < 0)
 				y = lengthy-1;
 		*/
-
-			if ( (totalCells.getCell(x,y)).getLive() && (i != 1 || j != 1))
+			Cell tempCell = totalCells.getCell(x,y);
+			if ( tempCell.getLive() && (i != 1 || j != 1))
 				liveNeighboors += 1;
 		}
 	return;
@@ -107,8 +116,10 @@ CellArray::CellArray(int x, int y)
 		{
 //			*(rootLocation+lengthx*i+j) = Cell(j,i); //cache issue?
 			(*this).setCell(j,i, Cell(j,i));
+			Cell tempCell = (*this).getCell(j,i);
+			tempCell.findNeighboors();
 			//only called once per cell
-			(*this).getCell(j,i).findNeighboors();
+			(*this).setCell(j,i, tempCell);
 		}
 
 }
@@ -137,14 +148,30 @@ void CellArray::setCell(int j, int i, Cell newCell)
 	return;
 }	
 
+void CellArray::setCellLive(int j, int i)
+{
+	Cell tempCell = this->getCell(j,i);
+	tempCell.setLive(true);
+	this->setCell(j,i,tempCell);
+	return;
+}
+
 void CellArray::iterate(void)
 {
 	for (int i=0; i<lengthx; i++)
 		for (int j=0; j<lengthy; j++)
 		{
-			(*this).getCell(j,i).calcLiveNeighboors((*this), lengthx, lengthy);
-			(*this).getCell(j,i).calcNextState();
-			(*this).getCell(j,i).nextState();
+			Cell tempCell = this->getCell(j,i);
+			tempCell.calcLiveNeighboors((*this), lengthx, lengthy);
+			tempCell.calcNextState();
+			this->setCell(j,i, tempCell);
+		}
+	for (int i=0; i<lengthx; i++)
+		for (int j=0; j<lengthy; j++)
+		{
+			Cell tempCell = this->getCell(j,i);
+			tempCell.nextState();
+			this->setCell(j,i, tempCell);
 		}
 }
 
