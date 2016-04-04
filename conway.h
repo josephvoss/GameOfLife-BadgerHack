@@ -27,7 +27,7 @@ class Cell
 		int getY(void);
 		bool getLive(void);
 		void setLive(bool live);
-		void findNeighboors(void);
+		void findNeighboors(int, int);
 		void calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy);
 		void calcNextState(void);
 		void nextState(void);

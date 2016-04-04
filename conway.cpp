@@ -6,16 +6,10 @@ Cell::Cell(int x, int y)
 {
 	myLocation.x = x; myLocation.y = y;
 	liveNeighboors=0; liveNow=false;
-//	*neighboors = (xyCoords*) malloc(3*sizeof(xyCoords));	
 	
 	
 }
 
-/*Cell::~Cell(void)
-{
-//	delete[] neighboors;
-}
-*/
 int Cell::getX(void)
 {
 	return myLocation.x;
@@ -37,7 +31,7 @@ void Cell::setLive(bool live)
 	return;
 }
 
-void Cell::findNeighboors(void)
+void Cell::findNeighboors(int xlength, int ylength)
 {
 	int i,j;
 	for (i=0; i<3; i++)
@@ -46,16 +40,14 @@ void Cell::findNeighboors(void)
 			//Starting point is 1 above and left of current
 			neighboors[j][i].x = myLocation.x+j-1;
 			neighboors[j][i].y = myLocation.y+i-1;
-	/*		if (myLocation.x+i < 0 || myLocation.y+j < 0) //or greater than
-			{
-				neighboors[i][j].x = myLocation.x+i;
-				neighboors[i][j].y = myLocation.y+j;
-			}
-			else
-			{
-				neighboors[i][j].x = -1;
-				neighboors[i][j].y = -1;
-			}*/
+			if (myLocation.x+j-1 < 0)
+				neighboors[j][i].x = xlength-1;
+			if (myLocation.y+i-1 < 0)
+				neighboors[j][i].y = ylength-1;
+			if (myLocation.x+j-1 > xlength-1)
+				neighboors[j][i].x = 0;
+			if (myLocation.y+i-1 > ylength-1)
+				neighboors[j][i].y = 0;
 		}
 	return;
 }
@@ -71,7 +63,7 @@ void Cell::calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy)
 			y = neighboors[j][i].y; 
 			
 			//Wrap borders (0 indexed x value)
-		/*	if (x + 1 > lengthx)
+			if (x + 1 > lengthx)
 				x = 0;
 			else if (x < 0)
 				x = lengthx-1;
@@ -79,7 +71,7 @@ void Cell::calcLiveNeighboors(CellArray& totalCells, int lengthx, int lengthy)
 				y = 0;
 			else if (y < 0)
 				y = lengthy-1;
-		*/
+		
 			Cell tempCell = totalCells.getCell(x,y);
 			if ( tempCell.getLive() && (i != 1 || j != 1))
 				liveNeighboors += 1;
@@ -111,13 +103,13 @@ CellArray::CellArray(int x, int y)
 {
 	lengthx = x; lengthy = y;
 	rootLocation = (Cell*) malloc(sizeof(Cell)*x*y);
-	for(int i=0; i<y; i++) //y-1?
-		for(int j=0; j<x; j++) //x-1?
+	for(int i=0; i<y+1; i++) //y-1?
+		for(int j=0; j<x+1; j++) //x-1?
 		{
 //			*(rootLocation+lengthx*i+j) = Cell(j,i); //cache issue?
 			(*this).setCell(j,i, Cell(j,i));
 			Cell tempCell = (*this).getCell(j,i);
-			tempCell.findNeighboors();
+			tempCell.findNeighboors(x,y);
 			//only called once per cell
 			(*this).setCell(j,i, tempCell);
 		}
@@ -158,16 +150,16 @@ void CellArray::setCellLive(int j, int i)
 
 void CellArray::iterate(void)
 {
-	for (int i=0; i<lengthx; i++)
-		for (int j=0; j<lengthy; j++)
+	for (int i=0; i<lengthy; i++)
+		for (int j=0; j<lengthx; j++)
 		{
 			Cell tempCell = this->getCell(j,i);
 			tempCell.calcLiveNeighboors((*this), lengthx, lengthy);
 			tempCell.calcNextState();
 			this->setCell(j,i, tempCell);
 		}
-	for (int i=0; i<lengthx; i++)
-		for (int j=0; j<lengthy; j++)
+	for (int i=0; i<lengthy; i++)
+		for (int j=0; j<lengthx; j++)
 		{
 			Cell tempCell = this->getCell(j,i);
 			tempCell.nextState();
