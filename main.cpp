@@ -15,6 +15,19 @@ void Rpentimo(CellArray& cellarray, int lengthx, int lengthy)
 	cellarray.setCellLive(centerx,centery+1); //bot row
 }
 
+void Acorn(CellArray& cellarray, int lengthx, int lengthy)
+{
+	int centerx = (lengthx-1)/2;
+	int centery = (lengthy-1)/2;
+	cellarray.setCellLive(centerx-2,centery-1); //top row
+	cellarray.setCellLive(centerx,centery); //mid row
+	cellarray.setCellLive(centerx-3,centery+1); //bot row
+	cellarray.setCellLive(centerx-2,centery+1);
+	cellarray.setCellLive(centerx+1,centery+1);
+	cellarray.setCellLive(centerx+2,centery+1);
+	cellarray.setCellLive(centerx+3,centery+1);
+}
+
 void Glider(CellArray& cellarray, int lengthx, int lengthy)
 {
 	int centerx = (lengthx-1)/2;
@@ -37,7 +50,8 @@ int main()
 		lengthy -= 1;
         CellArray totalcells(lengthx, lengthy);
 
-	Rpentimo(totalcells, lengthx, lengthy);
+	//Rpentimo(totalcells, lengthx, lengthy);
+	Acorn(totalcells, lengthx, lengthy);
 
 	for (int a=0; a<100000; a++)
 	{
